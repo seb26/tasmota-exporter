@@ -37,6 +37,11 @@ func normalize(incoming map[string]any) map[string]any {
 			for k1, v := range converted {
 				normalized[toSnakeCase(k)+"_"+k1] = v
 			}
+		case []interface{}:
+			if k == "FriendlyName" && len(x) > 0 {
+				// Only return first friendly name
+				normalized[toSnakeCase(k)] = x[0]
+			}
 		}
 	}
 	return normalized
@@ -46,5 +51,5 @@ func toSnakeCase(camelCase string) string {
 	snake := matchFirstCap.ReplaceAllString(camelCase, "${1}_${2}")
 	snake = matchAllCap.ReplaceAllString(snake, "${1}_${2}")
 	snake = matchInvalidChar.ReplaceAllString(snake, "_")
- 	return strings.ToLower(snake)
+	return strings.ToLower(snake)
 }

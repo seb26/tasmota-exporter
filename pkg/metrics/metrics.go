@@ -21,19 +21,20 @@ func (m *Metrics) Refresh() {
 		statusNetHostname, hostnameExists := sourceMetrics.Metrics["status_net_hostname"].(string)
 		statusNetIpAddress, ipAddressExists := sourceMetrics.Metrics["status_net_ip_address"].(string)
 		statusDeviceName, deviceNameExists := sourceMetrics.Metrics["status_device_name"].(string)
+		statusFriendlyName, friendlyNameExists := sourceMetrics.Metrics["status_friendly_name"].(string)
 		for pmk, pmv := range sourceMetrics.Metrics {
-			if float, ok := pmv.(float64); ok && topicExists && hostnameExists && ipAddressExists && deviceNameExists {
+			if float, ok := pmv.(float64); ok && topicExists && hostnameExists && ipAddressExists && deviceNameExists && friendlyNameExists {
 				if _, ok := m.gauges[pmk]; !ok {
 					m.gauges[pmk] = prometheus.NewGaugeVec(
 						prometheus.GaugeOpts{
 							Name:      pmk,
 							Namespace: "tasmota",
 						},
-						[]string{"source", "status_topic", "status_net_hostname", "status_net_ip_address", "status_device_name"},
+						[]string{"source", "status_topic", "status_net_hostname", "status_net_ip_address", "status_device_name", "status_friendly_name"},
 					)
 					prometheus.MustRegister(m.gauges[pmk])
 				}
-				m.gauges[pmk].WithLabelValues(source, statusTopic, statusNetHostname, statusNetIpAddress, statusDeviceName).Set(float)
+				m.gauges[pmk].WithLabelValues(source, statusTopic, statusNetHostname, statusNetIpAddress, statusDeviceName, statusFriendlyName).Set(float)
 			}
 		}
 	}
